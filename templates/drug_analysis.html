@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Drug Analysis - {{ selected_drug }}{% endblock %}
+
+{% block content %}
+
+    <h1>Drug Analysis Dashboard</h1>
+
+    <form method="get">
+        <label for="drug_name">Select a drug to analyze:</label>
+        <select name="drug_name" onchange="this.form.submit()">
+            <option value="">-- Choose a drug --</option>
+            {% for drug in distinct_drugs %}
+                <option value="{{ drug }}" {% if drug == selected_drug %}selected{% endif %}>{{ drug }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if selected_drug %}
+        <h2>Analysis for {{ selected_drug }}</h2>
+
+        <h3>Average Monthly Sales: {{ avg_monthly_sales|floatformat:2 }}</h3>
+
+        <h3>Top 5 Months by Sales (Year-wise)</h3>
+        {% for year, months in top_months_by_year.items %}
+            <h4>{{ year }}</h4>
+            <ul>
+                {% for m in months %}
+                    <li>{{ m.month|date:"F Y" }} — {{ m.total_quantity }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+
+        <h3>Seasonal Sales Trend</h3>
+        <div id="seasonal-chart" style="width:600px; height:400px;"></div>
+        <script>
+            const seasons = {{ season_names|safe }};
+            const quantities = {{ season_values|safe }};
+            Plotly.newPlot('seasonal-chart', [{
+                x: seasons,
+                y: quantities,
+                type: 'bar',
+                marker: {color: 'teal'}
+            }], {
+                title: 'Seasonal Sales Trend',
+                yaxis: {title: 'Quantity Sold'},
+                xaxis: {title: 'Season'}
+            });
+        </script>
+
+        <h3>Geographic Drug Usage Heatmap</h3>
+        <div style="height: 600px; width: 100%; border: 1px solid #ccc; border-radius: 10px; overflow: hidden; margin-bottom: 20px;">
+            {{ map|safe }}
+        </div>
+        <p><em>Darker red areas indicate higher drug sales activity.</em></p>
+
+    <h3>Forecast Heatmap</h3>
+        <form method="get">
+            <input type="hidden" name="drug_name" value="{{ selected_drug }}">
+            <input type="hidden" name="forecast" value="true">
+            <label for="forecast_for">Forecast For:</label>
+            <select name="forecast_for" id="forecast_for">
+                <option value="tomorrow">Tomorrow</option>
+                <option value="next_week">Next Week</option>
+                <option value="next_month">Next Month</option>
+                <option value="next_year">Next Year</option>
+            </select>
+            <button type="submit">Generate Forecast</button>
+        </form>
+        {% if forecast_map %}
+            <h3>Forecasted Heatmap for {{ forecast_for_display }}</h3>
+            <div style="height: 600px; width: 100%; border: 1px solid #ccc; border-radius: 10px; overflow: hidden; margin-bottom: 20px;">
+                {{ forecast_map|safe }}
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <br><a href="{% url 'home' %}">Back to Home</a>
+{% endblock %}

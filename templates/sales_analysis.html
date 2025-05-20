@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Clinical Sales Analysis{% endblock %}
+
+{% block content %}
+<h1>Drug Sales Analysis</h1>
+
+<form method="get">
+    <label>Start Date: <input type="date" name="start_date" value="{{ filters.start_date }}"></label>
+    <label>End Date: <input type="date" name="end_date" value="{{ filters.end_date }}"></label>
+    <label>ATC Code:
+        <select name="atc_code">
+            <option value="">All</option>
+            {% for code in atc_codes %}
+            <option value="{{ code }}" {% if filters.atc_code == code %}selected{% endif %}>{{ code }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <label>Frequency:
+        <select name="frequency">
+            <option value="">All</option>
+            {% for freq in frequencies %}
+            <option value="{{ freq }}" {% if filters.frequency == freq %}selected{% endif %}>{{ freq }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <button type="submit">Apply Filters</button>
+</form>
+
+<h2>Total Sales Over Time</h2>
+<div id="line-chart"></div>
+
+<h2>Sales by ATC Code</h2>
+<div id="bar-chart"></div>
+
+<script>
+    // Data from Django context (JSON safe)
+    const totalSalesByPeriod = {{ total_sales_by_period|safe }};
+    const totalSalesByAtc = {{ total_sales_by_atc|safe }};
+
+    // Prepare line chart data
+    const lineData = {
+        x: Object.keys(totalSalesByPeriod),
+        y: Object.values(totalSalesByPeriod),
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Total Sales'
+    };
+
+    Plotly.newPlot('line-chart', [lineData], {
+        margin: { t: 30 },
+        yaxis: { title: 'Quantity Sold' },
+        xaxis: { title: 'Period' }
+    });
+
+    // Prepare bar chart data
+    const barData = [{
+        x: Object.keys(totalSalesByAtc),
+        y: Object.values(totalSalesByAtc),
+        type: 'bar',
+        marker: {color: 'steelblue'}
+    }];
+
+    Plotly.newPlot('bar-chart', barData, {
+        margin: { t: 30 },
+        yaxis: { title: 'Quantity Sold' },
+        xaxis: { title: 'ATC Code' }
+    });
+</script>
+
+{% endblock %}

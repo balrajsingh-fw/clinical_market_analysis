@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}Clinical Market Analysis{% endblock %}
+
+{% block content %}
+    <h1>Welcome to Clinical Market Analysis</h1>
+    <form action="{% url 'drug_analysis' %}" method="get">
+        <button type="submit">Start Analysis</button>
+    </form>
+{% endblock %}
