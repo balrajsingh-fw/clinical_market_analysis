@@ -20,6 +20,7 @@ def sales_analysis(request):
     end_date = request.GET.get('end_date')
     atc_code = request.GET.get('atc_code')
     frequency = request.GET.get('frequency')
+    city = request.GET.get('city')
 
     # Base queryset
     qs = DrugSale.objects.all()
@@ -37,6 +38,9 @@ def sales_analysis(request):
     # Filter by frequency if given
     if frequency:
         qs = qs.filter(frequency=frequency)
+
+    if city:
+        qs= qs.filter(city=city)
 
     # Determine truncation based on frequency (for grouping by date)
     if frequency == 'monthly':
@@ -73,6 +77,7 @@ def sales_analysis(request):
     # Send filter options for template
     atc_codes = DrugSale.objects.values_list('atc_code', flat=True).distinct()
     frequencies = DrugSale.objects.values_list('frequency', flat=True).distinct()
+    distinct_cities = DrugSale.objects.values_list('city', flat=True).distinct().order_by('city')
 
     context = {
         'data': list(data),
@@ -80,6 +85,7 @@ def sales_analysis(request):
         'total_sales_by_atc': total_sales_by_atc,
         'atc_codes': atc_codes,
         'frequencies': frequencies,
+        'distinct_cities': distinct_cities,
         'filters': {
             'start_date': start_date,
             'end_date': end_date,
