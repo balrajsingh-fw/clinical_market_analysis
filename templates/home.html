@@ -3,8 +3,16 @@
 {% block title %}Clinical Market Analysis{% endblock %}
 
 {% block content %}
-    <h1>Welcome to Clinical Market Analysis</h1>
-    <form action="{% url 'drug_analysis' %}" method="get">
-        <button type="submit">Start Analysis</button>
-    </form>
+<div class="container py-5 text-center">
+    <div class="card shadow-lg p-5 rounded-4">
+        <h1 class="mb-4 fw-bold text-primary">Welcome to Clinical Market Analysis</h1>
+        <p class="lead mb-4 text-secondary">
+            Discover insights, forecast trends, and visualize market dynamics for pharmaceutical sales.
+        </p>
+        <form action="{% url 'drug_analysis' %}" method="get">
+            <button type="submit" class="btn btn-lg btn-outline-primary px-5">Start Analysis</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
+

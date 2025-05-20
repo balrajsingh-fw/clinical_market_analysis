@@ -1,17 +1,37 @@
 {% extends 'base.html' %}
 
-{% block title %}Select Drug To Analyse{% endblock %}
+{% block title %}Select Drug to Analyze{% endblock %}
 
 {% block content %}
-    <h2>Select Drug for Analysis</h2>
-    <form action="{% url 'drug_analysis' %}" method="get">
-        <label for="drug_name">Drug Name:</label>
-        <select name="drug_name" id="drug_name" required>
-            <option value="">-- Select a Drug --</option>
-            {% for drug in distinct_drugs %}
-            <option value="{{ drug }}">{{ drug }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Analyze</button>
-    </form>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h2 class="card-title text-center text-primary mb-4">Select Drug for Analysis</h2>
+
+                    <form action="{% url 'drug_analysis' %}" method="get">
+                        <div class="mb-3">
+                            <label for="drug_name" class="form-label fw-semibold">Drug Name:</label>
+                            <select name="drug_name" id="drug_name" class="form-select" required>
+                                <option value="">-- Select a Drug --</option>
+                                {% for drug in distinct_drugs %}
+                                    <option value="{{ drug }}">{{ drug }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">🔍 Analyze</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <a href="{% url 'home' %}" class="btn btn-link">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
