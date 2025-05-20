@@ -1,5 +1,6 @@
-python3 -m venv myenv
-myenv\Scripts\activate.bat
+python -m venv myenv
+myenv\Scripts\activate.ps1
+
 pip install -r requirements.txt
 
 admin credentials
