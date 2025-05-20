@@ -160,15 +160,25 @@ def drug_analysis(request):
     if heat_data:
         HeatMap(heat_data, radius=12, blur=15, max_zoom=6, min_opacity=0.4).add_to(m)
 
+        # Group by city + lat + lon and sum quantities
+        city_grouped_data = defaultdict(lambda: {'quantity': 0, 'latitude': None, 'longitude': None})
+
         for s in sales_data:
+            key = (s['city'], s['latitude'], s['longitude'])
+            city_grouped_data[key]['quantity'] += s['quantity']
+            city_grouped_data[key]['latitude'] = s['latitude']
+            city_grouped_data[key]['longitude'] = s['longitude']
+
+        # Add single marker per city with total quantity
+        for (city, lat, lon), data in city_grouped_data.items():
             folium.CircleMarker(
-                location=[s['latitude'], s['longitude']],
+                location=[lat, lon],
                 radius=8,
                 color=None,
                 fill=True,
                 fill_color='#00000000',
                 fill_opacity=0.0,
-                tooltip=f"{s['city'] or 'Unknown City'} — {s['quantity']} units"
+                tooltip=f"{city or 'Unknown City'} — {data['quantity']} units"
             ).add_to(m)
 
     map_html = m._repr_html_()
@@ -216,22 +226,33 @@ def drug_analysis(request):
                 forecast_results = []
 
             # Build forecast map
-            m = folium.Map(location=map_center, zoom_start=4, tiles='CartoDB positron')
+            f_m = folium.Map(location=map_center, zoom_start=4, tiles='CartoDB positron')
             if forecast_results:
-                HeatMap(forecast_results, radius=12, blur=15, max_zoom=6, min_opacity=0.4).add_to(m)
+                HeatMap(forecast_results, radius=12, blur=15, max_zoom=6, min_opacity=0.4).add_to(f_m)
 
+                city_lookup = {}
                 for s in sales_data:
+                    key = (round(s['latitude'], 5), round(s['longitude'], 5))
+                    if key not in city_lookup and s['city']:
+                        city_lookup[key] = s['city']
+
+                for _, row in forecast_df.iterrows():
+                    lat = round(row['latitude'], 5)
+                    lon = round(row['longitude'], 5)
+                    forecast_val = row['forecast']
+                    city = city_lookup.get((lat, lon), 'Unknown City')
+
                     folium.CircleMarker(
-                        location=[s['latitude'], s['longitude']],
+                        location=[lat, lon],
                         radius=8,
                         color=None,
                         fill=True,
                         fill_color='#00000000',
                         fill_opacity=0.0,
-                        tooltip=f"{s['city'] or 'Unknown City'} — {s['quantity']} units"
-                    ).add_to(m)
+                        tooltip=f"{city} — Forecast: {int(forecast_val)} units"
+                    ).add_to(f_m)
 
-                forecast_map_html = m._repr_html_()
+                forecast_map_html = f_m._repr_html_()
             else:
                 forecast_map_html = "<p>No forecast data available for this filter.</p>"
 
