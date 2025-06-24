@@ -1,8 +1,10 @@
 version: "3.8"
 
 services:
-  secondproject:
+  web:
     build: .
-    container_name: clinical_analysis_container
     ports:
       - "3004:3004"
+    volumes:
+      - .:/app
+    restart: always
