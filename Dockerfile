@@ -1,17 +1,17 @@
-# Use official Python base image
-FROM python:3.11-slim
+# Use official Python
+FROM python:3.12-slim
 
-# Set working dir
 WORKDIR /app
 
-# Copy all files
 COPY . .
 
-# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose your Django port
+# Make sure your script is executable
+RUN chmod +x executable.sh
+
+# Expose your app port
 EXPOSE 3004
 
-# Start the Django dev server
-ENTRYPOINT ["python", "manage.py", "runserver", "0.0.0.0:3004"]
+# Use the script as the container's main process
+ENTRYPOINT ["./executable.sh"]
