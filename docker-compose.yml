@@ -4,7 +4,7 @@ services:
   web:
     build: .
     ports:
-      - "8043:8043"
+      - "8042:8042"
     volumes:
       - .:/app
     restart: always
