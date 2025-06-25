@@ -21,7 +21,7 @@ COPY ./executable.sh /executable.sh
 RUN chmod +x executable.sh
 
 # Expose your app port
-EXPOSE 3004
+EXPOSE 8043
 
 # Use the script as the container's main process
 ENTRYPOINT ["./executable.sh"]

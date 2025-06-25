@@ -9,4 +9,4 @@ echo "🔹 Build Docker image..."
 docker build -t clinical_analysis_app .
 
 echo "🔹 Run Docker container..."
-docker run -d --name clinical_analysis_container -p 3004:3004 clinical_analysis_app
+docker run -d --name clinical_analysis_container -p 8043:8043 clinical_analysis_app
