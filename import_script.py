@@ -1,4 +1,10 @@
 import pandas as pd
+import os
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'clinical_market_analysis.settings')
+django.setup()
+
 from analysis.models import DrugSale
 
 # Map of filenames and their frequencies
